@@ -28,7 +28,7 @@ bash scripts/main.sh
 
 ### 3. Results
 
-| Model                  | Pruning Rate | Wiki (ppl) | ptb (ppl) | obqa  | ARC_e | WinoG | HellaS | ARC_C | PIQA  | MathQA | Average |
+| Model                  | Pruning Ratio | Wiki (ppl) | ptb (ppl) | obqa  | ARC_e | WinoG | HellaS | ARC_C | PIQA  | MathQA | Average |
 |------------------------|--------------|------------|-----------|-------|-------|-------|--------|-------|-------|--------|---------|
 | DeepSeekMoE-16B-Base   | 20%          | 6.64       | 10.51     | 31.54 | 75.88 | 71.43 | 57.39  | 44.62 | 79.05 | 31.51  | 55.92   |
 |                        | 40%          | 6.91       | 11.56     | 30.00 | 73.78 | 69.06 | 52.29  | 40.61 | 76.50 | 30.12  | 53.19   |
