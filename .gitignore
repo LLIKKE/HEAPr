@@ -3,4 +3,5 @@ __pycache__/
 *.pyo
 *.pt
 *.log
+.DS_Store
 log_*/

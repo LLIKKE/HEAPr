@@ -28,7 +28,7 @@ Official implementation of the **ICLR 2026** paper:
 2. **Second-order pruning criterion**: inspired by Optimal Brain Surgery, leveraging a second-order information matrix to achieve state-of-the-art performance under pruning.
 3. **Low calibration cost**: pruning can be completed with two forward passes + one backward pass on a small calibration set.
 
-<img src="pruning/20260220-153611.png" alt="HEAPr overview|400" style="zoom:80%;" />
+<img src="pruning/20260220-153611.png" alt="HEAPr overview|300" style="zoom:80%;" />
 
 
 ---
@@ -72,7 +72,7 @@ python main.py \
 
 ### Main Results
 
-**Comparison of perplexity** on WikiText2 / PTB and **average accuracy** across selected zero-shot tasks.
+Comparison of perplexity on WikiText2 / PTB and average accuracy across selected zero-shot tasks.
 
 | Model | Pruning Ratio | Wiki (ppl) | PTB (ppl) | OBQA | ARC-e | WinoG | HellaS | ARC-c | PIQA | MathQA | Average |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
