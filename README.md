@@ -30,15 +30,13 @@ Official implementation of the **ICLR 2026** paper: **[HEAPr: Hessian-based Effi
 3. **Low calibration cost**: pruning can be completed with two forward passes + one backward pass on a small calibration set.
 
 <div align="center">
-  <img src="pruning/20260220-153611.png" alt="HEAPr overview" width="70%" />
+  <img src="pruning/20260220-153611.png" alt="HEAPr overview" width="60%" />
 </div>
 
 
 ---
 
 ### Installation
-
-#### Setup
 
 ```bash
 conda create -n heapr python=3.10 -y
@@ -83,9 +81,9 @@ Comparison of perplexity on WikiText2 / PTB and average accuracy across selected
 |  | 40% | 6.80 | 10.86 | 31.20 | 73.40 | 69.69 | 53.61 | 41.98 | 76.71 | 29.45 | 53.72 |
 | Qwen1.5-MoE-A2.7B-Chat | 25% | 8.31 | 14.12 | 30.40 | 68.43 | 66.30 | 55.22 | 37.88 | 76.06 | 35.01 | 52.76 |
 |  | 50% | 9.24 | 17.58 | 26.00 | 63.13 | 64.01 | 46.17 | 34.13 | 69.80 | 33.74 | 48.14 |
-| Qwen2-57B-A14B | 40% | 5.92 | 9.34 | 33.20 | 75.25 | 74.43 | 62.88 | 46.33 | 80.74 | 38.49 | 58.76 |
 | Qwen3-30B-A3B | 25% | 9.10 | 16.80 | 33.40 | 76.01 | 69.77 | 54.67 | 49.32 | 77.37 | 49.41 | 58.56 |
 |  | 50% | 11.22 | 26.29 | 23.60 | 67.21 | 61.80 | 38.19 | 38.82 | 66.59 | 35.88 | 47.44 |
+| Qwen2-57B-A14B | 40% | 5.92 | 9.34 | 33.20 | 75.25 | 74.43 | 62.88 | 46.33 | 80.74 | 38.49 | 58.76 |
 
 ---
 
