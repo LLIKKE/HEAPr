@@ -1,5 +1,5 @@
 
-### HEAPr
+# HEAPr
 
 <div align="center">
 
@@ -15,8 +15,9 @@
 
 </div>
 
-Official implementation of the **ICLR 2026** paper:  
-**[HEAPr: Hessian-based Efficient Atomic Expert Pruning in Output Space](https://openreview.net/forum?id=JAbMgS7gl6)**
+
+
+Official implementation of the **ICLR 2026** paper: **[HEAPr: Hessian-based Efficient Atomic Expert Pruning in Output Space](https://openreview.net/forum?id=JAbMgS7gl6)**
 
 ---
 
@@ -28,7 +29,9 @@ Official implementation of the **ICLR 2026** paper:
 2. **Second-order pruning criterion**: inspired by Optimal Brain Surgery, leveraging a second-order information matrix to achieve state-of-the-art performance under pruning.
 3. **Low calibration cost**: pruning can be completed with two forward passes + one backward pass on a small calibration set.
 
-<img src="pruning/20260220-153611.png" alt="HEAPr overview|300" style="zoom:80%;" />
+<div align="center">
+  <img src="pruning/20260220-153611.png" alt="HEAPr overview" width="70%" />
+</div>
 
 
 ---
@@ -58,7 +61,7 @@ Example command:
 ```bash
 python main.py \
   --model_path "deepseek-ai/deepseek-moe-16b-base" \
-  --compress_ratio 0.4 \
+  --compress_ratio 0.2 \
   --cali_data "wiki" \
   --cali_nsamples 128 \
   --cali_batch_size 8 \
