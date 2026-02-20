@@ -1,15 +1,24 @@
+# coding=utf-8
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+# This code is based on QuaRot(https://github.com/spcl/QuaRot/tree/main/quarot).
+# Licensed under Apache License 2.0.
+
 import argparse
-import transformers
+import logging
 import os
 from datetime import datetime
-import logging
+
 from termcolor import colored
-import pprint
-import shutil
 
 
 
-def parser():
+def build_arg_parser():
+    """Build an argument parser for the CLI."""
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -30,16 +39,20 @@ def parser():
     )
 
     parser.add_argument(
+        "--compress_ratio",
         "--compress_radio",
+        dest="compress_ratio",
         type=float,
         default=0.75,
-        help="compress radio for coloum cluster",
+        help="compression ratio for column clustering",
     )
     parser.add_argument(
+        "--eval_batch_size",
         "--eval_batchsize",
+        dest="eval_batch_size",
         type=int,
         default=64,
-        help="eval_batchsize",
+        help="eval batch size",
     )
     parser.add_argument(
         "--cali_data",
@@ -55,24 +68,28 @@ def parser():
     )
 
     parser.add_argument(
+        "--cali_batch_size",
         "--cali_batchsize",
+        dest="cali_batch_size",
         type=int,
         default=1,
-        help="cali_batchsize",
+        help="calibration batch size",
     )
     parser.add_argument(
-        '--tasks',
-        nargs='+',
-        default=["arc_challenge",
-                 "arc_easy",
-                 #"boolq",
-                 #"hellaswag",
-                 #"lambada_openai",
-                 #"openbookqa",
-                 #"piqa",
-                 #"social_iqa",
-                 #"winogrande",
-                 ])
+        "--tasks",
+        nargs="+",
+        default=[
+            "arc_challenge",
+            "arc_easy",
+            #"boolq",
+            #"hellaswag",
+            #"lambada_openai",
+            #"openbookqa",
+            #"piqa",
+            #"social_iqa",
+            #"winogrande",
+        ],
+    )
 
     parser.add_argument(
         "--zero_shot",
@@ -86,46 +103,58 @@ def parser():
         default=True,
         help="generate example.",
     )
-    parser.add_argument(
-        "--log_dir", type=str, default="./", help="log path"
-    )
-    args, unknown = parser.parse_known_args()
+    parser.add_argument("--log_dir", type=str, default="./", help="log path")
+    return parser
 
-    return args, unknown
 
-def create_logger(exp_dir, dist_rank=0, name=''):
-    # create logger
+def parser():
+    return build_arg_parser().parse_known_args()
+
+def create_logger(exp_dir, dist_rank=0, name=""):
+    """Create a configured logger for console and file output."""
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
-    # create formatter
-    fmt = '[%(asctime)s %(name)s] (%(filename)s %(lineno)d): %(levelname)s %(message)s'
-    color_fmt = colored('[%(asctime)s %(name)s]', 'green') + \
-                colored('(%(filename)s %(lineno)d)', 'yellow') + ': %(levelname)s %(message)s'
+    fmt = "[%(asctime)s %(name)s] (%(filename)s %(lineno)d): %(levelname)s %(message)s"
+    color_fmt = (
+        colored("[%(asctime)s %(name)s]", "green")
+        + colored("(%(filename)s %(lineno)d)", "yellow")
+        + ": %(levelname)s %(message)s"
+    )
 
-    # create console handlers for master process
     if dist_rank == 0:
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.DEBUG)
         console_handler.setFormatter(
-            logging.Formatter(fmt=color_fmt, datefmt='%Y-%m-%d %H:%M:%S'))
+            logging.Formatter(fmt=color_fmt, datefmt="%Y-%m-%d %H:%M:%S")
+        )
         logger.addHandler(console_handler)
 
-    # create file handlers
-    log_file = os.path.join(exp_dir, f'log_rank{dist_rank}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.txt')
-    file_handler = logging.FileHandler(log_file, mode='a')
+    log_file = os.path.join(
+        exp_dir, f"log_rank{dist_rank}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    )
+    file_handler = logging.FileHandler(log_file, mode="a")
     file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(logging.Formatter(fmt=fmt, datefmt='%Y-%m-%d %H:%M:%S'))
+    file_handler.setFormatter(logging.Formatter(fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S"))
     logger.addHandler(file_handler)
 
     return logger
 
-def process_args():
+
+def parse_args_and_setup_logging():
+    """Parse arguments, prepare experiment directory, and create logger."""
     args, unknown_args = parser()
+    args.compress_radio = args.compress_ratio
+    args.eval_batchsize = args.eval_batch_size
+    args.cali_batchsize = args.cali_batch_size
     args.model_name = args.model_path.split("/")[-1]
-    log = f'log_{datetime.now().strftime("%Y%m%d_%H%M%S")}'
-    args.exp_dir = os.path.join(args.log_dir,args.model_name, log)
+    log = f"log_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    args.exp_dir = os.path.join(args.log_dir, args.model_name, log)
     os.makedirs(args.exp_dir, exist_ok=True)
     logger = create_logger(args.exp_dir)
     return args, logger
+
+
+def process_args():
+    return parse_args_and_setup_logging()

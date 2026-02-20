@@ -1,6 +1,9 @@
-
-.git/
-.idea/
-*.pyc
-*.pyo
 __pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.pt
+*.log
+.DS_Store
+log_*/

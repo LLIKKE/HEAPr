@@ -1,0 +1,9 @@
+torch>=2.0
+# if deepseekmoe-16b-base transformers>=4.38
+transformers>=4.51.0
+accelerate>=0.27
+datasets>=2.16
+numpy>=1.23
+tqdm>=4.66
+termcolor>=2.4
+lm-eval>=0.4
