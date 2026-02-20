@@ -1,60 +1,108 @@
-# HEAPr
 
-Official implementation for the paper **HEAPr: Hessian-based Efficient Atomic Expert Pruning in Output Space**.[(Paper Link)](https://arxiv.org/abs/2509.22299v1)
+### HEAPr
 
-🚧 Code is coming soon. Currently, `DeepSeekMoE-16B-base` checkpoint loading and pruning evaluation are available for testing.
+<div align="center">
+
+<a href="https://openreview.net/forum?id=JAbMgS7gl6" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.shields.io/badge/ICLR-2026-b31b1b.svg" alt="ICLR 2026">
+</a>
+
+<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg" alt="License: CC BY-NC 4.0">
+</a>
+
+<img src="https://img.shields.io/badge/Python-3.10%2B-blue" alt="Python Version">
+
+</div>
+
+Official implementation of the **ICLR 2026** paper:  
+**[HEAPr: Hessian-based Efficient Atomic Expert Pruning in Output Space](https://openreview.net/forum?id=JAbMgS7gl6)**
 
 ---
 
-## Getting Started
+### Overview
 
+**HEAPr** is a structured pruning method for Mixture-of-Experts models that prunes at a finer granularity than experts by decomposing each expert into **atomic experts**. This enables:
 
-### 1. Download Model Weights
+1. **Flexible pruning granularity**: structured pruning at the atomic-expert level, yielding practical speedups across different hardware.
+2. **Second-order pruning criterion**: inspired by Optimal Brain Surgery, leveraging a second-order information matrix to achieve state-of-the-art performance under pruning.
+3. **Low calibration cost**: pruning can be completed with two forward passes + one backward pass on a small calibration set.
 
-We recommend downloading pretrained model weights locally from [Hugging Face](https://huggingface.co/meta-llama).
-Make sure to update the path in the script accordingly.
+<img src="pruning/20260220-153611.png" alt="HEAPr overview|400" style="zoom:80%;" />
+
 
 ---
 
-### 2. Run
+### Installation
 
-You can start testing checkpoints and pruning results with:
+#### Setup
 
 ```bash
-bash scripts/main.sh
+conda create -n heapr python=3.10 -y
+conda activate heapr
+pip install -r requirements.txt
 ```
 
 ---
 
-### 3. Results
+### Usage
 
-| Model                  | Pruning Ratio | Wiki (ppl) | ptb (ppl) | obqa  | ARC_e | WinoG | HellaS | ARC_C | PIQA  | MathQA | Average |
-|------------------------|--------------|------------|-----------|-------|-------|-------|--------|-------|-------|--------|---------|
-| DeepSeekMoE-16B-Base   | 20%          | 6.64       | 10.51     | 31.54 | 75.88 | 71.43 | 57.39  | 44.62 | 79.05 | 31.51  | 55.92   |
-|                        | 40%          | 6.91       | 11.56     | 30.00 | 73.78 | 69.06 | 52.29  | 40.61 | 76.50 | 30.12  | 53.19   |
-| Qwen1.5-MoE-A2.7B-Chat | 25%          | 8.14       | 14.76     | 31.80 | 67.22 | 67.82 | 55.67  | 37.56 | 76.39 | 34.87  | 53.05   |
-|                        | 50%          | 9.23       | 18.73     | 27.01 | 63.89 | 64.32 | 46.35  | 34.22 | 70.86 | 33.37  | 48.57   |
-| Qwen2-57B-A14B         | 40%          | 5.75       | 9.59      | 32.60 | 74.87 | 74.03 | 62.88  | 46.33 | 81.01 | 38.93  | 58.66   |
-| Qwen3-30B-A3B          | 25%          | 8.41       | 18.06     | 32.20 | 77.02 | 70.48 | 54.64  | 49.06 | 77.58 | 49.75  | 58.68   |
+`--model_path` can be set to:
+- `deepseek-ai/deepseek-moe-16b-base`
+- `Qwen/Qwen1.5-MoE-A2.7B-Chat`
+- `Qwen/Qwen3-30B-A3B`
+- `Qwen/Qwen2-57B-A14B`
 
+Example command:
 
-## Citation
-
-If you find our work useful, please cite:
-
+```bash
+python main.py \
+  --model_path "deepseek-ai/deepseek-moe-16b-base" \
+  --compress_ratio 0.4 \
+  --cali_data "wiki" \
+  --cali_nsamples 128 \
+  --cali_batch_size 8 \
+  --eval_batch_size 128 \
+  --zero_shot \
+  --tasks openbookqa arc_easy winogrande hellaswag arc_challenge piqa mathqa \
+  --log_dir "./log_pruning"
 ```
-@article{li2025heapr
-  title={HEAPr: Hessian-based Efficient Atomic Expert Pruning in Output Space}, 
-  author={Ke Li and Zheng Yang and Zhongbin Zhou and Feng Xue and Zhonglin Jiang and Wenxiao Wang},
-  journal={arXiv preprint arXiv:2509.22299},
-  year={2025},
+
+---
+
+### Main Results
+
+**Comparison of perplexity** on WikiText2 / PTB and **average accuracy** across selected zero-shot tasks.
+
+| Model | Pruning Ratio | Wiki (ppl) | PTB (ppl) | OBQA | ARC-e | WinoG | HellaS | ARC-c | PIQA | MathQA | Average |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| DeepSeekMoE-16B-Base | 20% | 6.54 | 9.88 | 33.40 | 75.59 | 70.56 | 57.70 | 44.03 | 78.51 | 31.16 | 55.85 |
+| DeepSeekMoE-16B-Base | 40% | 6.80 | 10.86 | 31.20 | 73.40 | 69.69 | 53.61 | 41.98 | 76.71 | 29.45 | 53.72 |
+| Qwen1.5-MoE-A2.7B-Chat | 25% | 8.31 | 14.12 | 30.40 | 68.43 | 66.30 | 55.22 | 37.88 | 76.06 | 35.01 | 52.76 |
+| Qwen1.5-MoE-A2.7B-Chat | 50% | 9.24 | 17.58 | 26.00 | 63.13 | 64.01 | 46.17 | 34.13 | 69.80 | 33.74 | 48.14 |
+| Qwen2-57B-A14B | 40% | 5.92 | 9.34 | 33.20 | 75.25 | 74.43 | 62.88 | 46.33 | 80.74 | 38.49 | 58.76 |
+| Qwen3-30B-A3B | 25% | 9.10 | 16.80 | 33.40 | 76.01 | 69.77 | 54.67 | 49.32 | 77.37 | 49.41 | 58.56 |
+| Qwen3-30B-A3B | 50% | 11.22 | 26.29 | 23.60 | 67.21 | 61.80 | 38.19 | 38.82 | 66.59 | 35.88 | 47.44 |
+
+---
+
+### Citation
+
+If you use this codebase or results in your research or product, please cite:
+
+```bibtex
+@inproceedings{
+  li2026heapr,
+  title={{HEAP}r: Hessian-based Efficient Atomic Expert Pruning in Output Space},
+  author={Ke Li and Zheng Yang and Zhongbin Zhou and Xuefeng and Zhonglin Jiang and Wenxiao Wang},
+  booktitle={The Fourteenth International Conference on Learning Representations},
+  year={2026},
+  url={https://openreview.net/forum?id=JAbMgS7gl6}
 }
 ```
 
 ---
 
-## License
+### License
 
-This project is licensed under the [CC BY-NC-SA 4.0 License](https://creativecommons.org/licenses/by-nc-sa/4.0/).  
-
----
+This project is licensed under **CC BY-NC 4.0**.
